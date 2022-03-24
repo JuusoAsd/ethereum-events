@@ -2,12 +2,13 @@ from event_reader import EventReader
 from util import get_util
 import asyncio
 import json
+from web3.logs import STRICT, IGNORE, DISCARD, WARN
 
 
 def manage_transfer_event(message, contract, w3):
     tx_hash = json.loads(message)["params"]["result"]["transactionHash"]
     tx_receipt = w3.eth.get_transaction_receipt(tx_hash)
-    tx_info = contract.events.Transfer().processReceipt(tx_receipt)[0]
+    tx_info = contract.events.Transfer().processReceipt(tx_receipt, errors=DISCARD)[0]
     print(tx_hash)
     print(tx_info["args"]["wad"] / (10**18))
     print()
