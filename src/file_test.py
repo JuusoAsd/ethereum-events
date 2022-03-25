@@ -65,7 +65,29 @@ def run_rari_pool():
 
     print(*event_list, sep="\n")
 
+def run_rari_market():
+    infura = get_util.http_url()
+    web3 = Web3(Web3.HTTPProvider(infura))
+
+    market_address = "0xd8553552f8868C1Ef160eEdf031cF0BCf9686945"
+    abi_implementation_address = "0x67db14e73c2dce786b5bbbfa4d010deab4bbfcf9"
+
+    abi = read_etherscan(abi_implementation_address)
+    market_contract = create_contract(web3, abi, market_address)
+
+    print(*market_contract.events, sep="\n")
+
+    event = market_contract.events.AccrueInterest
+    current = web3.eth.block_number
+    event_list = fetch_events(event, from_block=0, to_block=current, interval=1000000)
+    print(*event_list, sep="\n\n")
+    """interestRateModel.getSupplyRate(
+        getCashPrior(), 
+        totalBorrows, 
+        add_(totalReserves, add_(totalAdminFees, totalFuseFees)), 
+        reserveFactorMantissa + fuseFeeMantissa + adminFeeMantissa
+        );"""
 
 if __name__ == "__main__":
 
-    run_rari_pool()
+    run_rari_market()
