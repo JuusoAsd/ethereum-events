@@ -5,3 +5,4 @@ asyncio
 websockets
 requests
 black
+pandas
