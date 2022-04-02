@@ -1,5 +1,5 @@
 from event_reader import EventReader
-from util import get_util
+from utils import get_util
 import asyncio
 import json
 from web3.logs import STRICT, IGNORE, DISCARD, WARN
@@ -22,6 +22,7 @@ def main():
     contract = w3.eth.contract(abi=abi, address=w3.toChecksumAddress(address))
 
     topic = w3.keccak(text="Transfer(address,address,uint256)").hex()
+
     reader.track_events(contract, topic, manage_transfer_event)
 
 

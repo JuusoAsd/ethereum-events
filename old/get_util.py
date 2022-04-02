@@ -62,7 +62,20 @@ def abi(name, address=None):
     except:
         abi = read_etherscan(name, address)
         return abi
-
+        
+def create_topic(web3, abi, eventname):
+    print(eventname)
+    topic_string=f"{eventname}("
+    for i in abi:
+        
+        if 'name' in i and 'type' in i:
+            
+            if i['name'] == eventname and i['type'] == 'event':
+                for j in i['inputs']:
+                    topic_string += f"{j['internalType']},"
+    topic_string = f"{topic_string[:-1]})"
+    print(topic_string)
+    return web3.keccak(text=topic_string).hex()
 
 if __name__ == "__main__":
     a = w3()

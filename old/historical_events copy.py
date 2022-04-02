@@ -6,8 +6,8 @@ from web3._utils.contracts import encode_abi
 
 def update_filter(filter, from_block=None, to_block=None):
     """Helper function to change interval"""
-    filter["fromBlock"] = from_block
-    filter["toBlock"] = to_block
+    filter["fromBlock"] = int(from_block)
+    filter["toBlock"] = int(to_block)
     return filter
 
 
@@ -60,20 +60,25 @@ def fetch_events(
     )
 
     logs = []
-    for i in range(1, round(to_block / interval)):
-        print(i * interval)
-        event_filter_params = update_filter(
-            event_filter_params, from_block=(i - 1) * interval, to_block=i * interval
-        )
-        interval_logs = event.web3.eth.getLogs(event_filter_params)
-        logs += interval_logs
 
-    event_filter_params = update_filter(
-        event_filter_params, from_block=i * interval, to_block=to_block
-    )
-    interval_logs = event.web3.eth.getLogs(event_filter_params)
-    logs += interval_logs
-
+    current_block = from_block
+    adjustment = 1
+    while current_block < to_block:
+        try:
+            event_filter_params = update_filter(
+                event_filter_params, 
+                from_block=current_block, 
+                to_block=current_block + interval / adjustment
+            )
+            interval_logs = event.web3.eth.getLogs(event_filter_params)
+            logs += interval_logs
+            current_block += interval / adjustment
+            adjustment = 1
+            print(current_block)
+        except ValueError:
+            adjustment *= 2
+            print('Decreasing interval')
+           
     # Convert raw binary event data to easily manipulable Python objects
     event_data = []
     for entry in logs:

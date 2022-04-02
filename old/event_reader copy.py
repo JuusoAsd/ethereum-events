@@ -1,4 +1,4 @@
-from util import get_util
+from utils import get_util
 from pprint import pprint
 import json
 import sys

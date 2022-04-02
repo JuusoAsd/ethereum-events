@@ -1,5 +1,5 @@
 from event_reader import EventReader
-from util import get_util
+from utils import get_util
 import asyncio
 import json
 from web3.logs import STRICT, IGNORE, DISCARD, WARN
