@@ -66,12 +66,12 @@ def _read_interval(
             print("ERROR", e)
             adjustment *= 2
 
-    event_data = []
+    """event_data = []
     for entry in all_logs:
         data = get_event_data(abi_codec, event_abi, entry)
         event_data.append(data)
-
-    return event_data
+    """
+    return all_logs
 
 
 def read_history(
@@ -93,18 +93,24 @@ def read_history(
             intervals,
         )
 
-    event_data = [item for sublog in log_lists for item in sublog]
-    return event_data
+    logs = [item for sublog in log_lists for item in sublog]
+    return logs
 
 
 if __name__ == "__main__":
     w3 = get_web3("https")
-    pool_address = w3.toChecksumAddress("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852")
-    uniswap_pool_abi = read_abi("uni_v2_pool", address=pool_address)
+    # address = w3.toChecksumAddress("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852")
+    # abi = read_abi("uni_v2_pool", address=pool_address)
 
-    contract = w3.eth.contract(address=pool_address, abi=uniswap_pool_abi)
+    address = w3.toChecksumAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+    abi = read_abi("erc20", address=address)
+    contract = w3.eth.contract(address=address, abi=abi)
 
-    events = read_history(
-        pool_address, uniswap_pool_abi, "Sync", 14007042, 14507042, 50000, {}
-    )
-    print(f"Found total of {len(events)} events")
+    event = contract.events.__getitem__("Transfer")
+    event_abi = event._get_event_abi()
+    abi_codec = event.web3.codec
+
+    event_logs = read_history(address, abi, "Transfer", 14500000, 14507042, 10000, {})
+    print(f"Found total of {len(event_logs)} events")
+
+    # print(get_event_data(abi_codec, event_abi, event_logs[0]))
