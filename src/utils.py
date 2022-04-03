@@ -1,6 +1,7 @@
 import os
 import json
 import time
+from hexbytes import HexBytes
 
 import requests
 from dotenv import dotenv_values
@@ -62,8 +63,11 @@ def get_ws_endpoint() -> str:
 
 
 def create_topic_string(abi: dict, eventname: str) -> str:
-    # parses the abi to topic string
-    # NOT COMPREHENSIVE, eq. structs?
+    """
+    Parses ABI to create a "topic string" used as input in some web3 functions
+    Not tested and likely fails with e.g. structs
+    """
+
     topic_string = f"{eventname}("
     for i in abi:
         if "name" in i and "type" in i:
@@ -72,3 +76,22 @@ def create_topic_string(abi: dict, eventname: str) -> str:
                     topic_string += f"{j['internalType']},"
     topic_string = f"{topic_string[:-1]})"
     return topic_string
+
+
+def convert_ws_response(res):
+    """
+    Tailor-made to convert the websocket response into correct format accepted by "get_event_data"
+    Not tested and might fail in some scenarios
+    """
+    w3 = get_web3()
+    return {
+        "address": res["address"],
+        "blockHash": HexBytes(res["blockHash"]),
+        "blockNumber": w3.toInt(hexstr=res["blockNumber"]),
+        "data": "0x000000000000000000000000000000000000000000000016594a2a69108e3c00",
+        "logIndex": w3.toInt(hexstr=res["logIndex"]),
+        "removed": res["removed"],
+        "topics": [HexBytes(item) for item in res["topics"]],
+        "transactionHash": HexBytes(res["transactionHash"]),
+        "transactionIndex": w3.toInt(hexstr=res["transactionIndex"]),
+    }
