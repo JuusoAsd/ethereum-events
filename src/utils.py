@@ -88,7 +88,7 @@ def convert_ws_response(res):
         "address": res["address"],
         "blockHash": HexBytes(res["blockHash"]),
         "blockNumber": w3.toInt(hexstr=res["blockNumber"]),
-        "data": "0x000000000000000000000000000000000000000000000016594a2a69108e3c00",
+        "data": res["data"],
         "logIndex": w3.toInt(hexstr=res["logIndex"]),
         "removed": res["removed"],
         "topics": [HexBytes(item) for item in res["topics"]],

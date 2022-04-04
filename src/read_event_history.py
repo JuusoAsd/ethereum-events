@@ -4,7 +4,7 @@ from multiprocessing import Pool
 from web3._utils.filters import construct_event_filter_params
 from web3._utils.events import get_event_data
 
-from utils import get_web3, read_abi, create_topic_string
+from src.utils import get_web3, read_abi
 
 
 def create_interval_list(from_block: int, to_block: int, interval: int) -> list:
@@ -66,11 +66,6 @@ def _read_interval(
             print("ERROR", e)
             adjustment *= 2
 
-    """event_data = []
-    for entry in all_logs:
-        data = get_event_data(abi_codec, event_abi, entry)
-        event_data.append(data)
-    """
     return all_logs
 
 
@@ -94,7 +89,16 @@ def read_history(
         )
 
     logs = [item for sublog in log_lists for item in sublog]
-    return logs
+    parsed_events = []
+
+    contract = get_web3("https").eth.contract(address=address, abi=abi)
+    event = contract.events.__getitem__(event_name)
+    event_abi = event._get_event_abi()
+    abi_codec = event.web3.codec
+
+    for event in logs:
+        parsed_events.append(get_event_data(abi_codec, event_abi, event))
+    return parsed_events
 
 
 if __name__ == "__main__":
@@ -102,15 +106,17 @@ if __name__ == "__main__":
     # address = w3.toChecksumAddress("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852")
     # abi = read_abi("uni_v2_pool", address=pool_address)
 
-    address = w3.toChecksumAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F")
-    abi = read_abi("erc20", address=address)
+    # address = w3.toChecksumAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+    # abi = read_abi("erc20", address=address)
+
+    address = w3.toChecksumAddress("0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc")
+    abi = read_abi("uni_v2_pool", address=address)
+
     contract = w3.eth.contract(address=address, abi=abi)
 
-    event = contract.events.__getitem__("Transfer")
+    event = contract.events.__getitem__("Sync")
     event_abi = event._get_event_abi()
     abi_codec = event.web3.codec
 
-    event_logs = read_history(address, abi, "Transfer", 14500000, 14507042, 10000, {})
+    event_logs = read_history(address, abi, "Sync", 14504000, 14507042, 10000, {})
     print(f"Found total of {len(event_logs)} events")
-
-    # print(get_event_data(abi_codec, event_abi, event_logs[0]))

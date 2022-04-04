@@ -1,6 +1,7 @@
 import json
 
-from web3.types import LogReceipt
+
+from web3._utils.events import get_event_data
 import websocket
 
 from utils import (
@@ -54,10 +55,14 @@ class LiveEventTracker:
 
     def _on_message(self, ws, msg):
         data = json.loads(msg)
+        print("MSG received")
         if "params" in data:
             event_info = data["params"]["result"]
             converted_response = convert_ws_response(event_info)
-
+            res = get_event_data(self.abi_codec, self.event_abi, converted_response)
+            to_save = f"{res['blockNumber']},{res['transactionIndex']},{res['transactionHash']},{res['args']['reserve0']},{res['args']['reserve0']},{res['args']['reserve1']}\n"
+            with open("testfile.txt", "+a") as f:
+                f.write(to_save)
         else:
             print(data)
 
@@ -74,9 +79,13 @@ class LiveEventTracker:
 
 def main():
     w3 = get_web3("ws")
-    dai_address = w3.toChecksumAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F")
-    dai_abi = read_abi("erc20", address=dai_address)
-    tracker = LiveEventTracker(dai_address, dai_abi, "Transfer")
+    # dai_address = w3.toChecksumAddress("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+    # dai_abi = read_abi("erc20", address=dai_address)
+
+    address = w3.toChecksumAddress("0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc")
+    abi = read_abi("uni_v2_pool", address=address)
+
+    tracker = LiveEventTracker(address, abi, "Sync")
     tracker.ws.run_forever()
 
 
