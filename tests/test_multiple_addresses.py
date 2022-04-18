@@ -1,7 +1,7 @@
 import pytest
 
-from ..history_v2 import read_history
-from ..util import get_web3, read_abi
+from src.event_reader.history_v2 import read_history
+from src.event_reader.util import get_web3, read_abi
 from web3._utils.filters import construct_event_filter_params, construct_event_topic_set
 
 

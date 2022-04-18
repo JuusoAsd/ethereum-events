@@ -108,10 +108,6 @@ def read_history(
         parsed_events.append(get_event_data(abi_codec, event_abi, event))
     return parsed_events
 
-def read_history_simple(
-
-) -> list:
-
 if __name__ == "__main__":
     w3 = get_web3("https")
     # address = w3.toChecksumAddress("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852")
