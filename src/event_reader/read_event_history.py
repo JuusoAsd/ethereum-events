@@ -4,7 +4,7 @@ from multiprocessing import Pool
 from web3._utils.filters import construct_event_filter_params
 from web3._utils.events import get_event_data
 
-from event_reader.util import get_web3, read_abi
+from src.event_reader.util import get_web3, read_abi
 
 
 def create_interval_list(
