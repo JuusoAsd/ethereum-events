@@ -20,9 +20,11 @@ def read_abi(filename: str, address: str = False) -> dict:
     # if doesn't and address is known, use that instead
     except:
         abi = get_abi_etherscan(address)
-        with open(json_path, "w") as f:
-            f.write(abi)
-
+        try:
+            with open(json_path, "w") as f:
+                f.write(abi)
+        except:
+            return abi
     return abi
 
 
@@ -44,7 +46,7 @@ def get_abi_etherscan(address):
 
 
 def config() -> dict:
-    return dotenv_values(".env")
+    return dict(os.environ)
 
 
 def get_web3(conn_type: str = "https") -> Web3:
