@@ -4,7 +4,7 @@ import time
 from hexbytes import HexBytes
 
 import requests
-from dotenv import dotenv_values
+from dotenv import dotenv_values, load_dotenv
 from web3 import Web3
 
 ETHERSCAN = "https://api.etherscan.io/api"
@@ -46,6 +46,7 @@ def get_abi_etherscan(address):
 
 
 def config() -> dict:
+    load_dotenv()
     return dict(os.environ)
 
 

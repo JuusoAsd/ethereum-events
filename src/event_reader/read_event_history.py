@@ -7,11 +7,7 @@ from web3._utils.events import get_event_data
 from src.event_reader.util import get_web3, read_abi
 
 
-def create_interval_list(
-    from_block: int, 
-    to_block: int, 
-    interval: int
-    ) -> list:
+def create_interval_list(from_block: int, to_block: int, interval: int) -> list:
     """
     Creates even intervals where last one is cut to match total blocks
     """
@@ -27,11 +23,7 @@ def create_interval_list(
 
 
 def _read_interval(
-    address: list, 
-    abi: dict, 
-    event_name: str, 
-    argument_filters: dict, 
-    interval: tuple
+    address: list, abi: dict, event_name: str, argument_filters: dict, interval: tuple
 ) -> list:
     """reads specific events in interval from specific contract"""
 
@@ -107,6 +99,7 @@ def read_history(
     for event in logs:
         parsed_events.append(get_event_data(abi_codec, event_abi, event))
     return parsed_events
+
 
 if __name__ == "__main__":
     w3 = get_web3("https")
